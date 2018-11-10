@@ -52,13 +52,24 @@ p.rotation.y = Deg2Rad(90);
 p.position.set(-50,20,0);
 
 
+var cube = createRectangle(5,2,3, colors.darkred)
+cube.position.x = 5;
+cube.rotation.y = 5;
+
+cube = createRectangle(2,3,4, colors.darkgreen)
+cube.position.x = -5;
+cube.rotation.y = -5;
+
+var rug = createCylinder(12,12,0.2,16, colors.darkred);
+scene.add(rug);
+
+
+
 var tree = createTree();
 tree.position.y = 7;
 
 //Render loop
 animate();
-
-
 
 //Function definitions:
 function animate() {
@@ -93,21 +104,37 @@ function createPointLight(color)
 	return light;
 }
 
-function createTetrahedron(color,radius,subdiv=0, flatShading=false)
+
+function createRectangle(x,y,z,color)
+{
+
+	let geometry = new THREE.BoxBufferGeometry( x, y, z );
+	let material = new THREE.MeshPhongMaterial( {color: color} );
+	let cube = new THREE.Mesh( geometry, material );
+
+	cube.receiveShadow = true;
+	cube.castShadow = true;
+	cube.position.y = y/2;
+	scene.add(cube);
+	return cube;
+}
+
+function createTetrahedron(color,radius,subdiv=0, flatShading=false, addToScene=true)
 {
 	let mat = new THREE.MeshPhongMaterial({color: color, flatShading: flatShading});
-	//let mat = new THREE.MeshLambertMaterial({color: color});
 	let geo = new THREE.TetrahedronGeometry(radius,subdiv);
 	geo.applyMatrix( new THREE.Matrix4().makeRotationAxis( new THREE.Vector3( 1, 0, -1 ).normalize(), Math.atan( Math.sqrt(2)) ) );
 	let tetra = new THREE.Mesh(geo,mat);
 	tetra.rotation.y = -5;
 	tetra.receiveShadow = true;
 	tetra.castShadow = true;
-
+	if(addToScene){
+		scene.add(tetra);
+	}
 	return tetra;
 }
 
-function createPlane(x=0,y=0,z=0,color=colors.white)
+function createPlane(x, y, z, color=colors.white)
 {
 	//let mat = new THREE.MeshPhongMaterial({color: color, side: THREE.DoubleSide, shininess: 2});
 	let mat = new THREE.MeshLambertMaterial({color: color, side: THREE.DoubleSide});
@@ -118,13 +145,17 @@ function createPlane(x=0,y=0,z=0,color=colors.white)
 	return plane;
 }
 
-function createCylinder(radiusTop, radiusBot, height, segments, color,flatShading=false)
+function createCylinder(radiusTop, radiusBot, height, segments, color,flatShading=false, addToScene=true)
 {
 	var geo = new THREE.CylinderGeometry(radiusTop, radiusBot, height, segments);
 	var mat = new THREE.MeshPhongMaterial({color: color, flatShading: flatShading});
 	var cylinder = new THREE.Mesh(geo,mat);
 	cylinder.castShadow = true;
 	cylinder.receiveShadow = true;
+	if(addToScene) {
+		scene.add(cylinder);
+	}
+
 	return cylinder;
 }
 
@@ -133,28 +164,28 @@ function createTree()
 {
 	let treeGroup = new THREE.Group();
 
-	let treeFoot = createCylinder(3,3,2,8, colors.darkestGreen,true);
+	let treeFoot = createCylinder(3,3,2,8, colors.darkestGreen,true,false);
 	treeFoot.position.y = -7;
 	//Tree Trunk
-	let trunk = createCylinder(2,2,6,6,colors.brown,true);
+	let trunk = createCylinder(2,2,6,6,colors.brown,true,false);
 	trunk.position.y = -6;
 
 	//Bottom branches
-	let bot = createTetrahedron(colors.darkgreen, 10);
-	let bot2 = createTetrahedron(colors.darkgreen, 9);
+	let bot = createTetrahedron(colors.darkgreen, 10,false, false);
+	let bot2 = createTetrahedron(colors.darkgreen, 9,false, false);
 	bot2.rotation.y = 4.5;
 	
 	//Mid Branches
-	let mid = createTetrahedron(colors.green, 9);
+	let mid = createTetrahedron(colors.green, 9, false, false);
 	mid.position.y = 5;
-	let mid2 = createTetrahedron(colors.green, 8);
+	let mid2 = createTetrahedron(colors.green, 8, false, false);
 	mid2.rotation.y = 4.5;
 	mid2.position.y = 5;
 	
 	//Top Branches
-	let top = createTetrahedron(colors.lightgreen, 7);
+	let top = createTetrahedron(colors.lightgreen, 7, false);
 	top.position.y = 10;
-	let top2 = createTetrahedron(colors.lightgreen, 7);
+	let top2 = createTetrahedron(colors.lightgreen, 7, false);
 	top2.position.y = 10;
 	top2.rotation.y = 4.5;
 
@@ -186,8 +217,6 @@ function treeLight()
 	group.add(holder,bulbLight);
 	scene.add(group);
 }
-
-
 
 function Deg2Rad(degrees)
 {
