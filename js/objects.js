@@ -33,3 +33,59 @@ function createTree()
 
 	return treeGroup;
 }
+
+
+function treeLight()
+{
+	let group = new THREE.Group();
+	let holder = createCylinder(.1,.1,1,8, 0x000000, true);
+	holder.position.y = 10;
+
+	var bulbGeometry = new THREE.SphereBufferGeometry( .1, 16, 8 );
+	var bulbLight = new THREE.PointLight( colors.yellow, .5, 1, 2 );
+
+	var bulbMat = new THREE.MeshStandardMaterial( {
+		emissive: colors.yellow,
+		emissiveIntensity: 1,
+		color: 0x000000
+	} );
+
+	bulbLight.add( new THREE.Mesh( bulbGeometry, bulbMat ) );
+	bulbLight.position.set( 0, 10.5, 0 );
+
+	group.add(holder,bulbLight);
+	scene.add(group);
+}
+
+function particles()
+{
+	// create the particle variables
+	let particleCount = 1800;
+    let particles = new THREE.Geometry();
+    let pMaterial = new THREE.PointsMaterial({
+      	color: 0xFFFFFF,
+      	size: 2,
+      	blending: THREE.AdditiveBlending,
+  	  	transparent: true
+    });
+
+	
+//now create the individual particles
+	for (var p = 0; p < particleCount; p++) {
+
+  		// create a particle with random
+  		// position values, -250 -> 250
+		let pY = Math.random() * 10 - 1;
+    	let pZ = Math.random() * 10 - 1;
+  		let pX = Math.random() * 10 - 1;
+      	particle = new THREE.Vector3(pX, pY, pZ);
+
+  		// add it to the geometry
+  		particles.vertices.push(particle);
+}
+	// create the particle system
+	var particleSystem = new THREE.Points(particles, pMaterial);
+	particleSystem.sortParticles = true;
+	// add it to the scene
+	scene.add(particleSystem);
+}
