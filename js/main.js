@@ -21,9 +21,11 @@ var showWireframe = false;
 
 
 //Setup Renderer
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.shadowMap.enabled = true;
 renderer.shadowMapSoft = true;
+renderer.autoClear = false;
+renderer.setClearColor(0x000000, 0.0);
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
@@ -36,31 +38,26 @@ camera.position.set(40,15,75);
 camera.lookAt(0,0,0);
 
 //Create Lights
-createAmbientLight(colors.white);
+createAmbientLight(colors.bluegray);
 var light = createPointLight(colors.white);
 light.position.set(20,15,30);
 
 
 //Create Room - Floor / Ceiling / Walls
-var p = createPlane(100,140,0, colors.brown);
+var p = createPlane(100,140,0, colors.darkgray);
 p.rotation.x = Deg2Rad(90);
 
-p = createPlane(100,100,0, colors.brown);
-p.rotation.x = Deg2Rad(90);
-p.position.y = 40;
+var wall = createRectangle(2,6,100, colors.darkgray);
+wall.position.x = 49;
 
-p = createPlane(100,40,0, colors.brown);
-p.position.set(0,20,-50);
+wall = createRectangle(2,6,100, colors.darkgray);
+wall.position.x = -49;
 
-p = createPlane(100,40,0,colors.brown);
-p.rotation.y = Deg2Rad(90);
-p.position.set(50,20,0);
+wall = createRectangle(2,6,100, colors.darkgray);
+wall.rotation.y = Deg2Rad(90);
+wall.position.z = -49;
 
-p = createPlane(100,40,0,colors.brown);
-p.rotation.y = Deg2Rad(90);
-p.position.set(-50,20,0);
-
-
+//presents
 var cube = createRectangle(5,2,3, colors.darkred);
 cube.position.x = 5;
 cube.rotation.y = 5;
@@ -73,24 +70,21 @@ cube = createRectangle(1.5,1,3, colors.yellow);
 cube.position.x = -1;
 cube.position.z = 4;
 
-var bench = createRectangle(40,3,15, colors.darkgray);
-bench.position.set(50,1.5,0);
-bench.rotation.y = Deg2Rad(90);
-
 var rug = createCylinder(12,12,0.2,16, colors.darkred);
 scene.add(rug);
 
 var tree = createTree();
 tree.position.y = 7;
 
-particles();
+var particles = createParticles();
+
 //Render loop
 animate();
-
 
 //Function definitions:
 function animate()
 {
+	animateParticles(particles);
  	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 }
@@ -106,7 +100,7 @@ function buttonClicked()
 
 function createAmbientLight(color)
 {
-	let ambientlight = new THREE.AmbientLight( color );
+	let ambientlight = new THREE.AmbientLight( color, 0.4 );
 	scene.add( ambientlight );
 	return ambientlight;
 }

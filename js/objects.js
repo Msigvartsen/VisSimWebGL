@@ -57,35 +57,38 @@ function treeLight()
 	scene.add(group);
 }
 
-function particles()
+function createParticles()
 {
-	// create the particle variables
-	let particleCount = 1800;
-    let particles = new THREE.Geometry();
-    let pMaterial = new THREE.PointsMaterial({
-      	color: 0xFFFFFF,
-      	size: 2,
-      	blending: THREE.AdditiveBlending,
-  	  	transparent: true
-    });
+	var material = new THREE.PointsMaterial({color: 0xffffcc, size: 0.2});
+	var geometry = new THREE.Geometry();
+	var x,y,z;
+	for(var i = 0; i < 1800; i++)
+	{
+		x = (Math.random() * 500) - 400;
+		y = (Math.random() * 800) - 400;
+		z = (Math.random() * 300) - 400;
 
-	
-//now create the individual particles
-	for (var p = 0; p < particleCount; p++) {
+		geometry.vertices.push(new THREE.Vector3(x, y, z));
+	}
 
-  		// create a particle with random
-  		// position values, -250 -> 250
-		let pY = Math.random() * 10 - 1;
-    	let pZ = Math.random() * 10 - 1;
-  		let pX = Math.random() * 10 - 1;
-      	particle = new THREE.Vector3(pX, pY, pZ);
-
-  		// add it to the geometry
-  		particles.vertices.push(particle);
+	let pointCloud = new THREE.Points(geometry, material);
+	scene.add(pointCloud);
+	return pointCloud;
 }
-	// create the particle system
-	var particleSystem = new THREE.Points(particles, pMaterial);
-	particleSystem.sortParticles = true;
-	// add it to the scene
-	scene.add(particleSystem);
+
+function animateParticles(particle)
+{
+	let length = particle.geometry.vertices.length;
+
+	for(var i = 0; i < length; i++ )
+	{
+		let dX, dY, dZ;
+    	dX = (Math.random() * 200 - 1);
+    	dZ = (Math.random() * 200 - 1);
+    	dY = (Math.random() * 200 - 1);
+
+    	particle.geometry.vertices[i].set(dX,dY,dZ);
+  	}
+
+  	particle.geometry.verticesNeedUpdate = true;
 }
